@@ -1,2 +1,4 @@
 # Project exclude paths
 /target/
+/homework4-spring-integration.iml
+/.idea/
