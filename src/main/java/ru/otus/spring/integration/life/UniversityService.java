@@ -21,10 +21,6 @@ public class UniversityService {
                 .build();
     }
 
-    public boolean filter(Schoolboy schoolboy) {
-        return schoolboy.getAvgExamScore() > 70;
-    }
-
     public Student process(Student student) {
         student.setAge(student.getAge() + 6);
         student.setPercentOfKnowledge(

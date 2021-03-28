@@ -10,7 +10,7 @@ import java.util.List;
 @MessagingGateway
 public interface Life {
 
-    @Gateway(requestChannel = "personChanel", replyChannel = "deceasedChannel")
+    @Gateway(requestChannel = "personChannel", replyChannel = "deceasedChannel")
     List<Deceased> process(List<Person> orderItem);
 
 }

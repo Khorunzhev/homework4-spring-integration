@@ -1,7 +1,7 @@
 package ru.otus.spring.integration;
 
 import lombok.extern.java.Log;
-import org.apache.commons.lang3.RandomUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,10 +18,9 @@ import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.scheduling.PollerMetadata;
 import ru.otus.spring.integration.domain.Deceased;
 import ru.otus.spring.integration.domain.Person;
-import ru.otus.spring.integration.life.UniversityService;
+import ru.otus.spring.integration.life.filters.CompanyFilter;
+import ru.otus.spring.integration.life.filters.UniversityFilter;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
@@ -40,8 +39,14 @@ public class App {
             Person.builder().FIO("Smirnov Smirno").age(8).build(),
             Person.builder().FIO("Petrov Petro").age(6).build());
 
+    @Autowired
+    UniversityFilter universityFilter;
+
+    @Autowired
+    CompanyFilter companyFilter;
+
     @Bean
-    public QueueChannel personChanel() {
+    public QueueChannel personChannel() {
         return MessageChannels.queue( 10 ).get();
     }
 
@@ -82,14 +87,16 @@ public class App {
 
     @Bean
     public IntegrationFlow lifeFlow() {
-        return IntegrationFlows.from("personChanel")
+        return IntegrationFlows.from("personChannel")
                 .split()
                 .handle("schoolService", "process")
                 .channel("schoolEndChanel")
-                .filter("universityService", "filter",
+                .filter(universityFilter::filterSchoolboys,
                         notUniverse -> notUniverse.discardChannel("socialChanel"))
                 .handle("universityService", "process")
                 .channel("universityEndChanel")
+                .filter(companyFilter::filterUniversityBoys,
+                        notCompany -> notCompany.discardChannel("socialChanel"))
                 .handle("companyService", "process")
                 .channel("companyEndChanel")
                 .handle("pensionFundService", "process")
@@ -101,7 +108,7 @@ public class App {
     public static void main( String[] args ) throws Exception {
         AbstractApplicationContext ctx = new AnnotationConfigApplicationContext( App.class );
 
-        Life cafe = ctx.getBean( Life.class );
+        Life life = ctx.getBean( Life.class );
 
         ForkJoinPool pool = ForkJoinPool.commonPool();
 
@@ -111,9 +118,9 @@ public class App {
             pool.execute( () -> {
                 String listOfObjectsInString =  personList.stream().map(Object::toString).collect(Collectors.joining(","));
                 log.info(String.format("Список живых: %s", listOfObjectsInString));
-                List<Deceased> deceasedList = cafe.process( personList );
+                List<Deceased> deceasedList = life.process( personList );
                 listOfObjectsInString =  deceasedList.stream().map(Object::toString).collect(Collectors.joining(","));
-                log.info(String.format("Список живых: %s", listOfObjectsInString));
+                log.info(String.format("Список мертвых: %s", listOfObjectsInString));
             } );
         }
     }
