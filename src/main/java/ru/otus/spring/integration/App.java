@@ -18,6 +18,7 @@ import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.scheduling.PollerMetadata;
 import ru.otus.spring.integration.domain.Deceased;
 import ru.otus.spring.integration.domain.Person;
+import ru.otus.spring.integration.life.UniversityService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +46,31 @@ public class App {
     }
 
     @Bean
+    public QueueChannel schoolEndChanel() {
+        return MessageChannels.queue( 10 ).get();
+    }
+
+    @Bean
+    public QueueChannel universityEndChanel() {
+        return MessageChannels.queue( 10 ).get();
+    }
+
+    @Bean
+    public QueueChannel companyEndChanel() {
+        return MessageChannels.queue( 10 ).get();
+    }
+
+    @Bean
+    public QueueChannel socialChanel() {
+        return MessageChannels.queue( 10 ).get();
+    }
+
+    @Bean
+    public QueueChannel lifeEndChanel() {
+        return MessageChannels.queue( 10 ).get();
+    }
+
+    @Bean
     public PublishSubscribeChannel deceasedChannel() {
         return MessageChannels.publishSubscribe().get();
     }
@@ -55,13 +81,20 @@ public class App {
     }
 
     @Bean
-    public IntegrationFlow cafeFlow() {
-        return IntegrationFlows.from( "personChanel" )
+    public IntegrationFlow lifeFlow() {
+        return IntegrationFlows.from("personChanel")
                 .split()
-                .handle( "schoolService", "process" )
-                .
+                .handle("schoolService", "process")
+                .channel("schoolEndChanel")
+                .filter("universityService", "filter",
+                        notUniverse -> notUniverse.discardChannel("socialChanel"))
+                .handle("universityService", "process")
+                .channel("universityEndChanel")
+                .handle("companyService", "process")
+                .channel("companyEndChanel")
+                .handle("pensionFundService", "process")
                 .aggregate()
-                .channel( "deceasedChannel" )
+                .channel("deceasedChannel")
                 .get();
     }
 

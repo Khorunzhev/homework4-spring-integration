@@ -14,17 +14,6 @@ public class SchoolService {
 
     RandomGenerationHelper randomGenerationHelper;
 
-    public Schoolboy enrollIn(Person person) {
-        return Schoolboy.builder()
-                .age(person.getAge())
-                .FIO(person.getFIO())
-                .build();
-    }
-
-    public boolean filter(Person person) {
-        return true;
-    }
-
     public Schoolboy process(Schoolboy schoolboy) {
         schoolboy.setAge(schoolboy.getAge() + 11);
         schoolboy.setAvgExamScore(
