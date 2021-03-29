@@ -96,7 +96,14 @@ public class App {
                 .handle("universityService", "process")
                 .channel("universityEndChanel")
                 .filter(companyFilter::filterUniversityBoys,
-                        notCompany -> notCompany.discardChannel("socialChanel"))
+                        notCompany -> notCompany
+                                .discardFlow(df -> df
+                                        .channel("socialChanel")
+                                        .handle("socialService", "process")
+                                        .aggregate()
+                                        .channel("pensionerChannel"))
+
+                )
                 .handle("companyService", "process")
                 .channel("companyEndChanel")
                 .handle("pensionFundService", "process")
