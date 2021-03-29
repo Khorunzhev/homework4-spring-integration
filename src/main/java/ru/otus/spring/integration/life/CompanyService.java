@@ -9,20 +9,10 @@ import ru.otus.spring.integration.domain.Student;
 @Service
 public class CompanyService {
 
-
-    public Employee enrollIn(Student student) {
+    public Employee process(Student student) {
         return Employee.builder()
-                .age(student.getAge())
+                .age(student.getAge() + 60)
                 .FIO(student.getFIO())
                 .build();
-    }
-
-    public boolean filter(Student student) {
-        return student.getPercentOfKnowledge() > 75;
-    }
-
-    public Employee process(Employee employee) {
-        employee.setAge(employee.getAge() + 60);
-        return employee;
     }
 }

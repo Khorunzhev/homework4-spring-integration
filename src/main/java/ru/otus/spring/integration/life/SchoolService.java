@@ -14,12 +14,12 @@ public class SchoolService {
 
     RandomGenerationHelper randomGenerationHelper;
 
-    public Schoolboy process(Schoolboy schoolboy) {
-        schoolboy.setAge(schoolboy.getAge() + 11);
-        schoolboy.setAvgExamScore(
-                randomGenerationHelper
-                        .genRandomDouble(50, 100));
-        return schoolboy;
+    public Schoolboy process(Person person) {
+        return Schoolboy.builder()
+                .age(person.getAge() + 11)
+                .avgExamScore(randomGenerationHelper
+                        .genRandomDouble(50, 100))
+                .FIO(person.getFIO())
+                .build();
     }
-
 }

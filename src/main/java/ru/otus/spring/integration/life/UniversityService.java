@@ -14,19 +14,13 @@ public class UniversityService {
 
     RandomGenerationHelper randomGenerationHelper;
 
-    public Student enrollIn(Schoolboy schoolboy) {
+    public Student process(Schoolboy schoolboy) {
         return Student.builder()
-                .age(schoolboy.getAge())
+                .age(schoolboy.getAge() + 6)
                 .FIO(schoolboy.getFIO())
+                .percentOfKnowledge(randomGenerationHelper
+                        .genRandomDouble(50, 100))
                 .build();
-    }
-
-    public Student process(Student student) {
-        student.setAge(student.getAge() + 6);
-        student.setPercentOfKnowledge(
-                randomGenerationHelper
-                        .genRandomDouble(50, 100));
-        return student;
     }
 
 }
