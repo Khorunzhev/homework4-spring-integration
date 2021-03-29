@@ -16,7 +16,7 @@ import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.MessageChannels;
 import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.scheduling.PollerMetadata;
-import ru.otus.spring.integration.domain.Deceased;
+import ru.otus.spring.integration.domain.Pensioner;
 import ru.otus.spring.integration.domain.Person;
 import ru.otus.spring.integration.life.filters.CompanyFilter;
 import ru.otus.spring.integration.life.filters.UniversityFilter;
@@ -76,7 +76,7 @@ public class App {
     }
 
     @Bean
-    public PublishSubscribeChannel deceasedChannel() {
+    public PublishSubscribeChannel pensionerChannel() {
         return MessageChannels.publishSubscribe().get();
     }
 
@@ -101,7 +101,7 @@ public class App {
                 .channel("companyEndChanel")
                 .handle("pensionFundService", "process")
                 .aggregate()
-                .channel("deceasedChannel")
+                .channel("pensionerChannel")
                 .get();
     }
 
@@ -118,7 +118,7 @@ public class App {
             pool.execute( () -> {
                 String listOfObjectsInString =  personList.stream().map(Object::toString).collect(Collectors.joining(","));
                 log.info(String.format("Список живых: %s", listOfObjectsInString));
-                List<Deceased> deceasedList = life.process( personList );
+                List<Pensioner> deceasedList = life.process( personList );
                 listOfObjectsInString =  deceasedList.stream().map(Object::toString).collect(Collectors.joining(","));
                 log.info(String.format("Список мертвых: %s", listOfObjectsInString));
             } );

@@ -8,4 +8,5 @@ import lombok.experimental.SuperBuilder;
 public class Person {
     private String FIO;
     private Integer age;
+    private Double pension;
 }
