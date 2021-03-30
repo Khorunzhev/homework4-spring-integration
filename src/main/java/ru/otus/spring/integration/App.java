@@ -61,7 +61,7 @@ public class App {
     }
 
     @Bean
-    public QueueChannel companyEndChanel() {
+    public QueueChannel activeLifeEndChannel() {
         return MessageChannels.queue( 10 ).get();
     }
 
@@ -92,7 +92,13 @@ public class App {
                 .handle("schoolService", "process")
                 .channel("schoolEndChanel")
                 .filter(universityFilter::filterSchoolboys,
-                        notUniverse -> notUniverse.discardChannel("socialChanel"))
+                        notUniversity -> notUniversity
+                                .discardFlow(df -> df
+                                        .channel("socialChanel")
+                                        .handle("socialService", "process")
+                                        .channel("activeLifeEndChannel"))
+
+                )
                 .handle("universityService", "process")
                 .channel("universityEndChanel")
                 .filter(companyFilter::filterUniversityBoys,
@@ -100,12 +106,11 @@ public class App {
                                 .discardFlow(df -> df
                                         .channel("socialChanel")
                                         .handle("socialService", "process")
-                                        .aggregate()
-                                        .channel("pensionerChannel"))
+                                        .channel("activeLifeEndChannel"))
 
                 )
                 .handle("companyService", "process")
-                .channel("companyEndChanel")
+                .channel("activeLifeEndChannel")
                 .handle("pensionFundService", "process")
                 .aggregate()
                 .channel("pensionerChannel")
