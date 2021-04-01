@@ -4,7 +4,6 @@ import org.springframework.integration.annotation.Filter;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.integration.domain.Student;
 
-@Service
 public class CompanyFilter {
 
     @Filter
